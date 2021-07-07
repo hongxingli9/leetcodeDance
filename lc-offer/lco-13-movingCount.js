@@ -22,11 +22,41 @@
 */
 
 /**
+ * DFS
  * @param {number} m
  * @param {number} n
  * @param {number} k
  * @return {number}
  */
- var movingCount = function(m, n, k) {
+var movingCount = function (m, n, k) {
+  let visited = new Set()
+  return dfs(0, 0, 0, 0);
+  function dfs(x, y, sx, sy) {
+    if (x >= m || y >= n || sx + sy > k || visited.has(`${x},${y}`)) return 0
+    visited.add(`${x},${y}`)
+    /**
+     * Sx 表示x的数位和，Sx + 1为x + 1的数位和
+     * 当（x + 1) % 10 = 0时，Sx + 1 = Sx - 8
+     * 当 (x + 1) % 10 != 0时，Sx + 1 = Sx + 1
+     */
+    return 1
+      + dfs(x + 1, y, (x + 1) % 10 ? sx + 1 : sx - 8, sy)
+      + dfs(x, y + 1, sx, (y + 1) % 10 ? sy + 1 : sy - 8)
+  }
+}
 
-};
+// BFS
+var movingCount = function (m, n, k) {
+  let visited = new Set()
+  let queue = []
+  queue.push([0, 0, 0 ,0])
+  while (queue.length) {
+    let t = queue.shift()
+    let x = t[0], y = t[1], sx = t[2], sy = t[3]
+    if (x >= m || y >= n || k < sx + sy || visited.has(`${x},${y}`)) continue
+    visited.add(`${x},${y}`)
+    queue.push([x + 1, y, (x + 1) % 10 ? sx + 1 : sx - 8, sy])
+    queue.push([x, y + 1, sx, (y + 1) % 10 ? sy + 1 : sy - 8])
+  }
+  return visited.size
+}
