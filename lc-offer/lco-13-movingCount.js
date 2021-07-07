@@ -45,7 +45,7 @@ var movingCount = function (m, n, k) {
   }
 }
 
-// BFS
+// BFS 广度优先搜索
 var movingCount = function (m, n, k) {
   let visited = new Set()
   let queue = []
