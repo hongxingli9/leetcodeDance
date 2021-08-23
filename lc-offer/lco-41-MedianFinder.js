@@ -41,8 +41,60 @@ double findMedian() - 返回目前所有元素的中位数。
 /**
  * initialize your data structure here.
  */
-var MedianFinder = function() {
+const defaultCmp = (x, y) => x > y;
 
+const swap = (arr, i, j) => ([arr[i], arr[j]] = [arr[j], arr[i]]);
+
+class Heap {
+  constructor (cmp = defaultCmp) {
+    this.container = [];
+    this.cmp = cmp;
+  }
+
+  insert (num) {
+    const {container, cmp} = this;
+    container.push(num);
+    let index = container.length - 1;
+    while (index) {
+      let parent = Math.floor((index - 1) / 2);
+      if (!cmp(container[index], container[parent])) {
+        return;
+      }
+      swap(container, index, parent);
+      index = parent;
+    }
+  }
+
+  extract () {
+    const {container, cmp} = this;
+    if (container.length === 0) return null;
+    swap(container, 0, container.length - 1);
+    const res = container.pop();
+    let index = 0;
+    let exchange = index * 2 + 1;
+    while (exchange < container.length) {
+      let right = index * 2 + 2;
+      if (right < container.length && cmp(container[right], container[exchange])) {
+        exchange = right;
+      }
+      if (!cmp(container[exchange], container[index])) {
+        break;
+      }
+      swap(container, index, exchange);
+      index = exchange;
+      exchange = index * 2 + 1;
+    }
+    return res;
+  }
+
+  top() {
+    return this.container.length > 0 ? this.container[0] : null;
+  }
+}
+
+var MedianFinder = function() {
+  this.maxHeap = new Heap();
+  this.minHeap = new Heap((x, y) => x < y);
 };
 
 /** 
@@ -50,14 +102,25 @@ var MedianFinder = function() {
  * @return {void}
  */
 MedianFinder.prototype.addNum = function(num) {
+  this.maxHeap.insert(num);
+  // 插入的该num后，得到大顶堆中的最大值，放入小顶堆中，放入的值有可能是成为最小值，也有可能不会。
+  this.minHeap.insert(this.maxHeap.top());
+  this.maxHeap.extract()
 
+  if (this.maxHeap.container.length < this.minHeap.container.length) {
+    // 把小顶堆中的最小值，放入到大顶堆中，一定会变成大顶堆的最大值。
+    this.maxHeap.insert(this.minHeap.top());
+    this.minHeap.extract()
+  }
 };
 
 /**
  * @return {number}
  */
 MedianFinder.prototype.findMedian = function() {
-
+  return this.maxHeap.container.length > this.minHeap.container.length
+    ? this.maxHeap.top()
+    : (this.maxHeap.top() + this.minHeap.top()) / 2;
 };
 
 /**
