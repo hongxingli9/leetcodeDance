@@ -21,3 +21,20 @@ var maxDepth = function(root) {
     return Math.max(deepOfTree(node.left) + 1, deepOfTree(node.right) + 1);
   }
 }
+
+// 方法2
+var maxDepth = function(root) {
+  if (!root) return 0;
+  let queue = [root];
+  let res = 0;
+  while (queue.length > 0) {
+    let temp = [];
+    for (let node of queue) {
+      node.left && temp.push(node.left);
+      node.right && temp.push(node.right);
+    }
+    queue = temp;
+    res++;
+  }
+  return res;
+}
