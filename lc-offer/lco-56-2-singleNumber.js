@@ -36,17 +36,17 @@ var singleNumber = function(nums) {
 };
 
 var singleNumber = function(nums) {
-  const counts = [];
+  const counts = Array.from({length: 32}).fill(0);
   let res = 0;
   for (let num of nums) {
     for (let j = 0; j < 32; j++) {
-      counts[j] += num & 1;
+      counts[j] += (num & 1);
       num >>>= 1
     }
   }
   for (let j = 0; j < 32; j++) {
     res <<= 1;
-    res |= counts[31 - j] % 3;
+    res = res | (counts[31 - j] % 3);
   }
   return res;
 }
